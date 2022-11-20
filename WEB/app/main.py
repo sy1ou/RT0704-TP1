@@ -4,11 +4,11 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import json
 from werkzeug.exceptions import abort
 
 import requests
 import sys
-import json
 
 app = Flask(__name__)
 app.config.from_mapping(
@@ -23,14 +23,14 @@ def get_libs():
     Retrieves the list of video libraries via an api request.
 
     :return: list of video libraries
-    :raise 503: if an error occurs during the request to the api
+    :raise 500: if an error occurs during the request to the api
     """
     try:
         r = requests.get(f"{app.config['API_URL']}/library")
         r.raise_for_status()
         libs = json.loads(r.text)
-    except (requests.RequestException, json.JSONDecodeError) as error:
-        abort(500, error)
+    except (requests.RequestException, json.decoder.JSONDecodeError) as e:
+        abort(500, e)
     return (libs)
 
 @app.route("/")
@@ -44,26 +44,30 @@ def new_library():
     """Create a new library."""
     if request.method == "POST":
         name = request.form["name"]
-        owner = request.form["owner"]
+        owner_name = request.form["owner_name"]
+        owner_surname = request.form["owner_surname"]
         error = None
 
         if not name:
             error = "Name is required."
-        elif not owner:
-            error = "Owner is required."
+        elif not owner_name:
+            error = "Owner: Name is required."
+        elif not owner_surname:
+            error = "Owner: Surname is required."
 
         if error is None:
+            payload = {'name': name, 'owner': {'name': owner_name, 'surname': owner_surname}}
             try:
                 # Request the api to create a new video library
-                r = requests.post(f"{app.config['API_URL']}/library/{name}")
+                r = requests.post(f"{app.config['API_URL']}/library/{name}", json=payload)
                 r.raise_for_status()
-            except requests.HTTPError as error:
+            except requests.HTTPError as e:
                 if r.status_code == 409:
                     error = "The video library already exists."
                 else:
-                    abort(500, error)
-            except requests.RequestException as error:
-                abort(500, error)
+                    abort(500, e)
+            except requests.RequestException as e:
+                abort(500, e)
 
         if error is None:
             flash("Successfully created video library")
@@ -75,21 +79,24 @@ def new_library():
 # Display films in video library
 @app.route("/library/<string:library>")
 def show_library(library):
+    decoded_lib = None
     error = None
-    # Check if the library exist
+
     try:
         # Retrieve library content
-        r = requests.get(f"{app.config['API_URL']}/library/")
-
-
-    except requests.HTTPError as error:
-        print(error, file=sys.stderr)
+        r = requests.get(f"{app.config['API_URL']}/library/{library}")
+        r.raise_for_status()
+        decoded_lib = json.loads(r.text)
+    except requests.HTTPError as e:
         if r.status_code == 404:
-            abort(404, f"The video library doesn't exist.")
-    except requests.RequestException as error:
-        print(error, file=sys.stderr)
+            error = "The video library does not exist."
+        else:
+            abort(500, e)
+    except (requests.RequestException, json.decoder.JSONDecodeError) as e:
+        abort(500, e)
 
-    return render_template("library/show.html")
+    return decoded_lib
+    return render_template("library/show.html", lib=decoded_lib, error=error)
 
 # Manage a video library based on the existence of a library (else abort(403) or error)
 @app.route("/library/<string:library>/settings")
@@ -102,12 +109,12 @@ def delete_library(library):
     try:
         # Delete library
         r = requests.post(f"{app.config['API_URL']}/library/")
-    except requests.HTTPError as error:
-        print(error, file=sys.stderr)
+    except requests.HTTPError as e:
+        print(e, file=sys.stderr)
         if r.status_code == 404:
             abort(404, f"The video library doesn't exist.")
-    except requests.RequestException as error:
-        print(error, file=sys.stderr)
+    except requests.RequestException as e:
+        print(e, file=sys.stderr)
 
     abort(404, f"The video library doesn't exist.")
 
@@ -131,8 +138,10 @@ def new_video():
             error = "Title is required."
         elif not year:
             error = "Year is required."
-        elif not director:
-            error = "Director is required."
+        elif not director_name:
+            error = "Director: Name is required."
+        elif not director_surname:
+            error = "Director: Surname is required."
         elif not actor1_name:
             error = "Actor 1: Name is required."
         elif not actor1_surname:
@@ -149,17 +158,27 @@ def new_video():
             error = "Library is required."
 
         if error is None:
+            payload = {
+                'title': title,
+                'year': year,
+                'director': {'name': director_name, 'surname': director_surname},
+                'actors': [
+                    {'name': actor1_name, 'surname': actor1_surname},
+                    {'name': actor2_name, 'surname': actor2_surname},
+                    {'name': actor3_name, 'surname': actor3_surname}
+                ]}
+
             try:
                 # Request the api to add a new video in a video library
-                r = requests.post(f"{app.config['API_URL']}/library/{library}/video/{title}")
+                r = requests.post(f"{app.config['API_URL']}/library/{library}/video/{title}", json=payload)
                 r.raise_for_status()
-            except requests.HTTPError as error:
+            except requests.HTTPError as e:
                 if r.status_code == 409:
                     error = "The video already exists."
                 else:
-                    abort(500, error)
-            except requests.RequestException as error:
-                abort(500, error)
+                    abort(500, e)
+            except requests.RequestException as e:
+                abort(500, e)
 
         if error is None:
             flash("Successfully add video in the video library")
@@ -179,12 +198,12 @@ def delete_video(library,video_id):
     try:
         # Delete library
         r = requests.post(f"{app.config['API_URL']}/library/")
-    except requests.HTTPError as error:
-        print(error, file=sys.stderr)
+    except requests.HTTPError as e:
+        print(e, file=sys.stderr)
         if r.status_code == 404:
             abort(404, f"The video library doesn't exist.")
-    except requests.RequestException as error:
-        print(error, file=sys.stderr)
+    except requests.RequestException as e:
+        print(e, file=sys.stderr)
 
     return redirect(url_for(f"library.{library}.settings"))
 

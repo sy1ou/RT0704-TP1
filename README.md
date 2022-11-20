@@ -30,11 +30,11 @@ docker build -t web .
 ## To do
 
 - [x] créez l'image pour le générateur de pages WEB
-  - [ ] décrivez l'ensemble des pages WEB ainsi que les interactions avec le gestionnaire de services REST
-  - [ ] décrivez la configuration système de votre conteneur
-- [ ] créez l'image pour le gestionnaire de services REST
-  - [ ] décrivez l'architecture de l'API REST, ainsi que l'ensemble des endpoints et des signatures des services
-  - [ ] décrivez la configuration système de votre conteneur
+  - [x] décrivez l'ensemble des pages WEB ainsi que les interactions avec le gestionnaire de services REST
+  - [x] décrivez la configuration système de votre conteneur
+- [x] créez l'image pour le gestionnaire de services REST
+  - [x] décrivez l'architecture de l'API REST, ainsi que l'ensemble des endpoints et des signatures des services
+  - [x] décrivez la configuration système de votre conteneur
 - [ ] développez l'ensemble des services REST. Vous testerez ces services à l'aide de la commande curl
 - [ ] développez les pages associés aux services, comme indiqué dans les transparents du cours 7
 - [ ] proposez une batterie de test pour présenter votre application
