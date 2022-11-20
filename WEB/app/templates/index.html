@@ -6,14 +6,14 @@
 
 {% block content %}
   {% for lib in libs %}
-    <article class="element">
+    <div class="element">
       <header>
         <div>
           <h1>{{ lib }}</h1>
         </div>
-          <a class="action" href="{{ url_for('show_library', library=lib) }}">Show</a>
+        <a class="action" href="{{ url_for('show_library', library=lib) }}">Show</a>
       </header>
-    </article>
+    </div>
     {% if not loop.last %}
       <hr>
     {% endif %}

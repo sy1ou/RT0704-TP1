@@ -1,1 +1,35 @@
 {% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Edit video{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="title">Title</label>
+    <input type=text name="title" id="title" value="{{ title }}" maxlength="32" required>
+
+    <label for="year">Year</label>
+    <input type="number" name="year" id="year" placeholder="YYYY" value="{{ year }}" min="1800" max="2100" required>
+
+    <label for="director">Director</label>
+    <input type=text name="director" id="director" value="{{ director }}" maxlength="24" required>
+
+    <label for="actor1_name">Actor 1: Name</label>
+    <input type=text name="actor1_name" id="actor1_name" value="{{ actor1_name }}" maxlength="24" required>
+    <label for="actor1_surname">Actor 1: Surname</label>
+    <input type=text name="actor1_surname" id="actor1_surname" value="{{ actor1_surname }}" maxlength="24" required>
+
+    <label for="actor2_name">Actor 2: Name</label>
+    <input type=text name="actor2_name" id="actor2_name" value="{{ actor2_name }}" maxlength="24" required>
+    <label for="actor2_surname">Actor 2: Surname</label>
+    <input type=text name="actor2_surname" id="actor2_surname" value="{{ actor2_surname }}" maxlength="24" required>
+
+    <label for="actor3_name">Actor 3: Name</label>
+    <input type=text name="actor3_name" id="actor3_name" value="{{ actor3_name }}" maxlength="24" required>
+    <label for="actor3_surname">Actor 3: Surname</label>
+    <input type=text name="actor3_surname" id="actor3_surname" value="{{ actor3_surname }}" maxlength="24" required>
+
+    <input type="submit" value="Save">
+  </form>
+{% endblock %}

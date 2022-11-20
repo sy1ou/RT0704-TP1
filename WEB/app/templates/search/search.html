@@ -5,13 +5,22 @@
 {% endblock %}
 
 {% block content %}
+  {% if error %}
+    <p class=error><strong>Error:</strong> {{ error }}
+  {% endif %}
   <form method="get">
     <label for="name">Name</label>
-    <input name="name" id="name" value="{{ request.form['name'] }}" maxlength="32" required>
+    <input type="search" name="name" id="name" maxlength="32" required>
     <label for="type">Type</label>
   	<select name="type" id="type">
       <option value="title">Title</option>
   	  <option value="actor">Actor</option>
+    </select>
+    <label for="lib">Library</label>
+    <select name="lib" id="lib">
+      {% for lib in libs %}
+        <option value="{{ lib }}">{{ lib }}</option>
+      {% endfor %}
     </select>
     <input type="submit" value="Search">
   </form>
