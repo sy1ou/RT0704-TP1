@@ -1,6 +1,6 @@
 ---
 services:
-  front:
+  frontend:
     build:
       context: ./
       dockerfile: Dockerfile
@@ -13,19 +13,19 @@ services:
     networks:
       - frontend
       - backend
-    # depends_on:
-    #   - backend
+    depends_on:
+      - backend
 
-  # backend:
-  #   build:
-  #     context: ./
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - type: bind
-  #       source: ./REST/app
-  #       target: /srv/app
-  #   networks:
-  #     - backend
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./REST/app
+        target: /srv/app
+    networks:
+      - backend
 
 networks:
   frontend: {}

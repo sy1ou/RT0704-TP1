@@ -1,10 +1,30 @@
 # RT0704-TP1
 
+## Considerations
+
+### Fonctions
+
+- Creation d'une videotheque
+  - Parametres
+    - Nom du fichier
+    - Proprietaire
+  - Creation de la liste des films vide
+- Suppression d'une videotheque
+  - Parametres
+    - Nom du fichier
+  - Destruction du fichier
+- Affichage de l'ensemble des films
+- Recherche d'un film
+- Ajout d'un film
+- Suppression d'un film
+- Recherche des films d'un acteur
+- Modification d'un film
+
 ## Development
 
 ```bash
 # Build de l'image docker pour le conteneur web
-docker build -t web WEB
+docker build -t web .
 ```
 
 ## To do
@@ -25,3 +45,5 @@ docker build -t web WEB
 - [Docker - Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
 - [Docker - Compose specification](https://docs.docker.com/compose/compose-file/)
 - [Flask's documentation](https://flask.palletsprojects.com/en/2.2.x/)
+- [Requests's documentation](https://requests.readthedocs.io/en/latest/api/)
+- [HTTP Status Codes](https://restfulapi.net/http-status-codes/)
