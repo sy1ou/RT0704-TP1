@@ -95,7 +95,6 @@ def show_library(library):
     except (requests.RequestException, json.decoder.JSONDecodeError) as e:
         abort(500, e)
 
-    return decoded_lib
     return render_template("library/show.html", lib=decoded_lib, error=error)
 
 # Manage a video library based on the existence of a library (else abort(403) or error)
@@ -104,19 +103,20 @@ def settings(library):
     return render_template("library/edit.html")
 
 # Manage a video library based on the existence of a library (else abort(403) or error)
-@app.route("/library/<string:library>/settings/delete", methods=["POST"])
+@app.route("/library/<string:library>/settings/delete", methods=["GET"]) #methods=["POST"] ???
 def delete_library(library):
     try:
         # Delete library
-        r = requests.post(f"{app.config['API_URL']}/library/")
+        r = requests.delete(f"{app.config['API_URL']}/library/{library}")
+        r.raise_for_status()
+        return "Succes"
     except requests.HTTPError as e:
-        print(e, file=sys.stderr)
         if r.status_code == 404:
             abort(404, f"The video library doesn't exist.")
+        else:
+            abort(400, e)
     except requests.RequestException as e:
-        print(e, file=sys.stderr)
-
-    abort(404, f"The video library doesn't exist.")
+        abort(500, e)
 
 @app.route("/new-video", methods=["GET", "POST"])
 def new_video():
@@ -229,19 +229,32 @@ def search_video():
         # libs = get_libs()
         # if lib not in libs:
         #     error = "This video library does not exist."
+        # Manage by try  ... except (below)
 
         if error is None:
-            match type:
-                case "title":
-                    r = requests.get(f"{app.config['API_URL']}/library/{lib}/by-name/{name}")
-                case "actor":
-                    r = requests.get(f"{app.config['API_URL']}/library/{lib}/by-actor/{name}")
-                case _:
-                    error = "Unknown search type."
+            try:
+                match type:
+                    case "title":
+                        r = requests.get(f"{app.config['API_URL']}/library/{lib}/by-name/{name}")
+                        r.raise_for_status()
+                        return "Succes"
+                    case "actor":
+                        r = requests.get(f"{app.config['API_URL']}/library/{lib}/by-actor/{name}")
+                        r.raise_for_status()
+                        return "Succes"
+                    case _:
+                        error = "Unknown search type."
+            except requests.HTTPError as e:
+                if r.status_code == 404:
+                    abort(404, f"The video library doesn't exist.")
+                else:
+                    abort(400, e)
+            except requests.RequestException as e:
+                abort(500, e)
 
-            # if error is None:
-            #     result = json.loads(r.text)
-            #     return result
-            #     return render_template("search/result.html", result=result)
+            if error is None:
+                result = json.loads(r.text)
+                return result
+                return render_template("search/result.html", result=result)
 
     return render_template("search/search.html", libs=get_libs(), error=error)

@@ -78,7 +78,8 @@ def library_management(library):
             # Prepare content to write in the new file
             content = {
                 "owner" : {"name": payload["owner"]["name"], "surname": payload["owner"]["surname"]},
-                "last_modify": date.today().strftime("%d/%m/%Y")
+                "last_modify": date.today().strftime("%d/%m/%Y"),
+                "videos": []
                 }
             try:
                 with open(new_library, "x") as file:
@@ -92,16 +93,12 @@ def library_management(library):
             abort(400, error)
 
     elif request.method == "DELETE":
-        pass
-
-# - Create parametres
-#   - Nom du fichier
-#   - Proprietaire
-# - Creation de la liste des films vide
-
-# - Delete parametres
-#   - Nom du fichier
-# - Destruction du fichier
+        target_library = os.path.join(app.config["DATABASE"], library)+".json"
+        try:
+            os.remove(target_library)
+            return "Succes"
+        except FileNotFoundError as e:
+            abort(404, e)
 
 # Add/Edit/Delete a video
 @app.route('/library/<string:library>/video/<string:title>', methods=['POST', 'PUT', 'DELETE'])
