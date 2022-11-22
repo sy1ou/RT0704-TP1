@@ -110,8 +110,6 @@ def video_management(library,title):
 def search_by_name(library,name):
     return "soon"
 
-# /search/name/Pulp+Fiction
-
 # Search for films by an actor in video library
 @app.route('/library/<string:library>/by-actor/<string:name>')
 def search_by_actor(library,name):

@@ -6,9 +6,6 @@
 {% endblock %}
 
 {% block content %}
-  {% if error %}
-    <p class=error><strong>Error:</strong> {{ error }}
-  {% endif %}
   {% for video in content['videos'] %}
     <article class="video">
       <header>

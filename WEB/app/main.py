@@ -80,7 +80,6 @@ def new_library():
 def show_library(library):
     """Display list of videos of a video library"""
     decoded_lib = None
-    error = None
 
     try:
         # Retrieve library content
@@ -89,31 +88,45 @@ def show_library(library):
         decoded_lib = json.loads(r.text)
     except requests.HTTPError as e:
         if r.status_code == 404:
-            error = "The video library does not exist."
+            abort(404, "The video library doesn't exist.")
         else:
             abort(500, e)
     except (requests.RequestException, json.decoder.JSONDecodeError) as e:
         abort(500, e)
 
-    return render_template("library/show.html", name=library, content=decoded_lib, error=error)
+    return render_template("library/show.html", name=library, content=decoded_lib)
 
 @app.route("/library/<string:library>/settings")
 def settings(library):
     """Manage a video library."""
-    return render_template("library/settings.html")
+    decoded_lib = None
 
-@app.route("/library/<string:library>/settings/delete", methods=["POST"]) #methods=["POST"] ???
+    try:
+        # Retrieve library content
+        r = requests.get(f"{app.config['API_URL']}/library/{library}")
+        r.raise_for_status()
+        decoded_lib = json.loads(r.text)
+    except requests.HTTPError as e:
+        if r.status_code == 404:
+            abort(404, "The video library doesn't exist.")
+        else:
+            abort(500, e)
+    except (requests.RequestException, json.decoder.JSONDecodeError) as e:
+        abort(500, e)
+
+    return render_template("library/settings.html", name=library, content=decoded_lib)
+
+@app.route("/library/<string:library>/settings/delete", methods=["POST"])
 def delete_library(library):
     """Delete a video library."""
     try:
         # Request to delete video library's file to the api
         r = requests.delete(f"{app.config['API_URL']}/library/{library}")
         r.raise_for_status()
-        flask("Sucess")
         return redirect(url_for("index"))
     except requests.HTTPError as e:
         if r.status_code == 404:
-            abort(404, f"The video library doesn't exist.")
+            abort(404, "The video library doesn't exist.")
         else:
             abort(400, e)
     except requests.RequestException as e:
@@ -227,12 +240,6 @@ def search_video():
         elif not lib:
             error = "Library is required."
 
-        # raise error if lib is not in libs ? get_libs on top of function ?
-        # libs = get_libs()
-        # if lib not in libs:
-        #     error = "This video library does not exist."
-        # Manage by try  ... except (below)
-
         if error is None:
             try:
                 match type:
@@ -248,7 +255,7 @@ def search_video():
                         error = "Unknown search type."
             except requests.HTTPError as e:
                 if r.status_code == 404:
-                    abort(404, f"The video library doesn't exist.")
+                    abort(404, "The video library doesn't exist.")
                 else:
                     abort(400, e)
             except requests.RequestException as e:
