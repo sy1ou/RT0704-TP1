@@ -1,227 +1,227 @@
 {
-    "proprietaire" : {
-        "nom" : "Doe",
-        "prénom" : "john"
+    "owner" : {
+        "name" : "Doe",
+        "surname" : "john"
     },
-    "dernère_modif" : "08/06/2022",
-    "films": [
+    "last_modify" : "08/06/2022",
+    "videos": [
         {
-            "titre": "Pulp fiction",
-            "année": 1994,
-            "réalisateur": {
-                "nom": "Tanrantino",
-                "prénom": "Quentin"
+            "title": "Pulp fiction",
+            "year": 1994,
+            "director": {
+                "name": "Tanrantino",
+                "surname": "Quentin"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "Travolta",
-                    "prénom": "John"
+                    "name": "Travolta",
+                    "surname": "John"
                 },
                 {
-                    "nom": "Thurman",
-                    "prénom": "Uma"
+                    "name": "Thurman",
+                    "surname": "Uma"
                 },
                 {
-                    "nom": "Jackson",
-                    "prénom": "Samuel L."
+                    "name": "Jackson",
+                    "surname": "Samuel L."
                 }
             ]
         },
         {
-            "titre": "Impitoyable",
-            "année": 1992,
-            "réalisateur": {
-                "nom": "Eastwood",
-                "prénom": "Clint"
+            "title": "Impitoyable",
+            "year": 1992,
+            "director": {
+                "name": "Eastwood",
+                "surname": "Clint"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "Eastwood",
-                    "prénom": "Clint"
+                    "name": "Eastwood",
+                    "surname": "Clint"
                 },
                 {
-                    "nom": "Ackman",
-                    "prénom": "Gene"
+                    "name": "Ackman",
+                    "surname": "Gene"
                 },
                 {
-                    "nom": "Freeman",
-                    "prénom": "Morgan"
+                    "name": "Freeman",
+                    "surname": "Morgan"
                 }
             ]
         },
         {
-            "titre": "Tigre et dragon",
-            "année": 2000,
-            "réalisateur": {
-                "nom": "Lee",
-                "prénom": "Ang"
+            "title": "Tigre et dragon",
+            "year": 2000,
+            "director": {
+                "name": "Lee",
+                "surname": "Ang"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "Yun-Fat",
-                    "prénom": "Chow"
+                    "name": "Yun-Fat",
+                    "surname": "Chow"
                 },
                 {
-                    "nom": "Yeoh",
-                    "prénom": "Michelle"
+                    "name": "Yeoh",
+                    "surname": "Michelle"
                 },
                 {
-                    "nom": "Ziyi",
-                    "prénom": "Zhang"
+                    "name": "Ziyi",
+                    "surname": "Zhang"
                 }
             ]
         },
         {
-            "titre": "Le Secret des poignards volants",
-            "année": 2004,
-            "réalisateur": {
-                "nom": "Yimou",
-                "prénom": "Zhang"
+            "title": "Le Secret des poignards volants",
+            "year": 2004,
+            "director": {
+                "name": "Yimou",
+                "surname": "Zhang"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "Kaneshiro",
-                    "prénom": "Takeshi"
+                    "name": "Kaneshiro",
+                    "surname": "Takeshi"
                 },
                 {
-                    "nom": "Lau",
-                    "prénom": "Andy"
+                    "name": "Lau",
+                    "surname": "Andy"
                 },
                 {
-                    "nom": "Ziyi",
-                    "prénom": "Zhang"
+                    "name": "Ziyi",
+                    "surname": "Zhang"
                 }
             ]
         },
         {
-            "titre": "Forrest Gump",
-            "année": 1994,
-            "réalisateur": {
-                "nom": "Zemeckis",
-                "prénom": "Robert"
+            "title": "Forrest Gump",
+            "year": 1994,
+            "director": {
+                "name": "Zemeckis",
+                "surname": "Robert"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "Hanks",
-                    "prénom": "Tom"
+                    "name": "Hanks",
+                    "surname": "Tom"
                 },
                 {
-                    "nom": "Wright",
-                    "prénom": "Robin"
+                    "name": "Wright",
+                    "surname": "Robin"
                 },
                 {
-                    "nom": "Sinise",
-                    "prénom": "Gary"
+                    "name": "Sinise",
+                    "surname": "Gary"
                 }
             ]
         },
         {
-            "titre": "Lawrence d'Arabie",
-            "année": 1962,
-            "réalisateur": {
-                "nom": "Lean",
-                "prénom": "David"
+            "title": "Lawrence d'Arabie",
+            "year": 1962,
+            "director": {
+                "name": "Lean",
+                "surname": "David"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "O'Toole",
-                    "prénom": "Peter"
+                    "name": "O'Toole",
+                    "surname": "Peter"
                 },
                 {
-                    "nom": "Sharif",
-                    "prénom": "Omar"
+                    "name": "Sharif",
+                    "surname": "Omar"
                 },
                 {
-                    "nom": "Guinness",
-                    "prénom": "Alec"
+                    "name": "Guinness",
+                    "surname": "Alec"
                 }
             ]
         },
         {
-            "titre": "Le pacha",
-            "année": 1968,
-            "réalisateur": {
-                "nom": "Lautner",
-                "prénom": "Georges"
+            "title": "Le pacha",
+            "year": 1968,
+            "director": {
+                "name": "Lautner",
+                "surname": "Georges"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "Gabin",
-                    "prénom": "Jean"
+                    "name": "Gabin",
+                    "surname": "Jean"
                 },
                 {
-                    "nom": "Carrel",
-                    "prénom": "Dany"
+                    "name": "Carrel",
+                    "surname": "Dany"
                 },
                 {
-                    "nom": "Pousse",
-                    "prénom": "André"
+                    "name": "Pousse",
+                    "surname": "André"
                 }
             ]
         },
         {
-            "titre": "Le Bon, la Brute et le Truand",
-            "année": 1966,
-            "réalisateur": {
-                "nom": "Leone",
-                "prénom": "Sergio"
+            "title": "Le Bon, la Brute et le Truand",
+            "year": 1966,
+            "director": {
+                "name": "Leone",
+                "surname": "Sergio"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "Eastwood",
-                    "prénom": "Clint"
+                    "name": "Eastwood",
+                    "surname": "Clint"
                 },
                 {
-                    "nom": "Wallach",
-                    "prénom": "Eli"
+                    "name": "Wallach",
+                    "surname": "Eli"
                 },
                 {
-                    "nom": "Van Cleef",
-                    "prénom": "Lee"
+                    "name": "Van Cleef",
+                    "surname": "Lee"
                 }
             ]
         },
         {
-            "titre": "Les tontons flingueurs",
-            "année": 1963,
-            "réalisateur": {
-                "nom": "Lautner",
-                "prénom": "Georges"
+            "title": "Les tontons flingueurs",
+            "year": 1963,
+            "director": {
+                "name": "Lautner",
+                "surname": "Georges"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "Ventura",
-                    "prénom": "Lino"
+                    "name": "Ventura",
+                    "surname": "Lino"
                 },
                 {
-                    "nom": "Blier",
-                    "prénom": "Bernard"
+                    "name": "Blier",
+                    "surname": "Bernard"
                 },
                 {
-                    "nom": "Blanche",
-                    "prénom": "Francis"
+                    "name": "Blanche",
+                    "surname": "Francis"
                 }
             ]
         },
         {
-            "titre": "Les Blues Brothers",
-            "année": 1980,
-            "réalisateur": {
-                "nom": "Landis",
-                "prénom": "John"
+            "title": "Les Blues Brothers",
+            "year": 1980,
+            "director": {
+                "name": "Landis",
+                "surname": "John"
             },
-            "acteurs": [
+            "actors": [
                 {
-                    "nom": "John",
-                    "prénom": "Belushi"
+                    "name": "John",
+                    "surname": "Belushi"
                 },
                 {
-                    "nom": "Akroyd",
-                    "prénom": "Dan"
+                    "name": "Akroyd",
+                    "surname": "Dan"
                 },
                 {
-                    "nom": "Brown",
-                    "prénom": "James"
+                    "name": "Brown",
+                    "surname": "James"
                 }
             ]
         }

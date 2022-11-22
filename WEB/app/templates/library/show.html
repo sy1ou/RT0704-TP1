@@ -2,27 +2,22 @@
 
 {% block header %}
   <h1>{% block title %}Library {{ name }}{% endblock %}</h1>
-  {% if g.user %}
-    <a class="action" href="{{ url_for('settings') }}">Settings</a>
-  {% endif %}
+  <a class="action" href="{{ url_for('settings', library=name) }}">Settings</a>
 {% endblock %}
 
 {% block content %}
   {% if error %}
     <p class=error><strong>Error:</strong> {{ error }}
   {% endif %}
-  {% for post in posts %}
-    <article class="post">
+  {% for video in content['videos'] %}
+    <article class="video">
       <header>
         <div>
-          <h1>{{ post['title'] }}</h1>
-          <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
+          <h1>{{ video['title'] }}</h1>
+          <div class="about">by {{ video['director']['surname'] }} {{ video['director']['name'] }} on {{ video['year'] }}</div>
         </div>
-        {% if g.user['id'] == post['author_id'] %}
-          <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
-        {% endif %}
       </header>
-      <p class="body">{{ post['body'] }}</p>
+      <p class="body">with {% for actor in video['actors'] %}{{ actor['surname'] }} {{ actor['name'] }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
     </article>
     {% if not loop.last %}
       <hr>

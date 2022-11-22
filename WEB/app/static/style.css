@@ -76,27 +76,27 @@ nav ul li a, nav ul li span, header .action {
   border: 1px solid #377ba8;
 }
 
-.element > header {
+.video > header {
   display: flex;
   align-items: flex-end;
   font-size: 0.85em;
 }
 
-.element > header > div:first-of-type {
+.video > header > div:first-of-type {
   flex: auto;
 }
 
-.element > header h1 {
+.video > header h1 {
   font-size: 1.5em;
   margin-bottom: 0;
 }
 
-.element .about {
+.video .about {
   color: slategray;
   font-style: italic;
 }
 
-.element .body {
+.video .body {
   white-space: pre-line;
 }
 

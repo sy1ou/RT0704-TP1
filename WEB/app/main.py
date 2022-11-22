@@ -41,7 +41,7 @@ def index():
 
 @app.route("/new-library", methods=["GET", "POST"])
 def new_library():
-    """Create a new library."""
+    """Create a new video library."""
     if request.method == "POST":
         name = request.form["name"]
         owner_name = request.form["owner_name"]
@@ -51,9 +51,9 @@ def new_library():
         if not name:
             error = "Name is required."
         elif not owner_name:
-            error = "Owner: Name is required."
+            error = "Owner's name is required."
         elif not owner_surname:
-            error = "Owner: Surname is required."
+            error = "Owner's surname is required."
 
         if error is None:
             payload = {'name': name, 'owner': {'name': owner_name, 'surname': owner_surname}}
@@ -76,9 +76,9 @@ def new_library():
 
     return render_template("library/new.html")
 
-# Display films in video library
 @app.route("/library/<string:library>")
 def show_library(library):
+    """Display list of videos of a video library"""
     decoded_lib = None
     error = None
 
@@ -95,21 +95,22 @@ def show_library(library):
     except (requests.RequestException, json.decoder.JSONDecodeError) as e:
         abort(500, e)
 
-    return render_template("library/show.html", lib=decoded_lib, error=error)
+    return render_template("library/show.html", name=library, content=decoded_lib, error=error)
 
-# Manage a video library based on the existence of a library (else abort(403) or error)
 @app.route("/library/<string:library>/settings")
 def settings(library):
-    return render_template("library/edit.html")
+    """Manage a video library."""
+    return render_template("library/settings.html")
 
-# Manage a video library based on the existence of a library (else abort(403) or error)
-@app.route("/library/<string:library>/settings/delete", methods=["GET"]) #methods=["POST"] ???
+@app.route("/library/<string:library>/settings/delete", methods=["POST"]) #methods=["POST"] ???
 def delete_library(library):
+    """Delete a video library."""
     try:
-        # Delete library
+        # Request to delete video library's file to the api
         r = requests.delete(f"{app.config['API_URL']}/library/{library}")
         r.raise_for_status()
-        return "Succes"
+        flask("Sucess")
+        return redirect(url_for("index"))
     except requests.HTTPError as e:
         if r.status_code == 404:
             abort(404, f"The video library doesn't exist.")
@@ -124,7 +125,8 @@ def new_video():
     if request.method == "POST":
         title = request.form["title"]
         year = request.form["year"]
-        director = request.form["director"]
+        director_name = request.form["director_name"]
+        director_surname = request.form["director_surname"]
         actor1_name = request.form["actor1_name"]
         actor1_surname = request.form["actor1_surname"]
         actor2_name = request.form["actor2_name"]
@@ -139,21 +141,21 @@ def new_video():
         elif not year:
             error = "Year is required."
         elif not director_name:
-            error = "Director: Name is required."
+            error = "Director's name is required."
         elif not director_surname:
-            error = "Director: Surname is required."
+            error = "Director's surname is required."
         elif not actor1_name:
-            error = "Actor 1: Name is required."
+            error = "Actor 1's name is required."
         elif not actor1_surname:
-            error = "Actor 1: Surname is required."
+            error = "Actor 1's surname is required."
         elif not actor2_name:
-            error = "Actor 2: Name is required."
+            error = "Actor 2's name is required."
         elif not actor2_surname:
-            error = "Actor 2: Surname is required."
+            error = "Actor 2's surname is required."
         elif not actor3_name:
-            error = "Actor 3: Name is required."
+            error = "Actor 3's name is required."
         elif not actor3_surname:
-            error = "Actor 3: Surname is required."
+            error = "Actor 3's surname is required."
         elif not library:
             error = "Library is required."
 
