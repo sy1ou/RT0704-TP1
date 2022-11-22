@@ -4,10 +4,10 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
-from flask import json
 from werkzeug.exceptions import abort
 
 import requests
+import json
 import sys
 
 app = Flask(__name__)
@@ -18,26 +18,107 @@ app.config.from_mapping(
     API_URL="http://rt0704-tp1-backend-1:8000",
 )
 
-def get_libs():
+def libs_list():
     """
     Retrieves the list of video libraries via an api request.
 
     :return: list of video libraries
     :raise 500: if an error occurs during the request to the api
     """
+    libs = None
     try:
         r = requests.get(f"{app.config['API_URL']}/library")
         r.raise_for_status()
         libs = json.loads(r.text)
     except (requests.RequestException, json.decoder.JSONDecodeError) as e:
         abort(500, e)
-    return (libs)
+    return libs
+
+def get_lib(library):
+    """
+    Retrieves the content of a video libraries via an api request.
+
+    :return: list of video libraries
+    :raise 404: if the video library doesn't exist
+    :raise 500: if an error occurs during the request to the api
+    """
+    decoded_lib = None
+    try:
+        # Retrieve library content
+        r = requests.get(f"{app.config['API_URL']}/library/{library}")
+        r.raise_for_status()
+        decoded_lib = json.loads(r.text)
+    except requests.HTTPError as e:
+        if r.status_code == 404:
+            abort(404, "The video library doesn't exist.")
+        else:
+            abort(500, e)
+    except (requests.RequestException, json.decoder.JSONDecodeError) as e:
+        abort(500, e)
+    return decoded_lib
+
+def check_video_format():
+    """
+    Check post format of video before processing the request.
+
+    :return: pre-build payload and error
+    """
+    title = request.form["title"]
+    year = request.form["year"]
+    director_name = request.form["director_name"]
+    director_surname = request.form["director_surname"]
+    actor1_name = request.form["actor1_name"]
+    actor1_surname = request.form["actor1_surname"]
+    actor2_name = request.form["actor2_name"]
+    actor2_surname = request.form["actor2_surname"]
+    actor3_name = request.form["actor3_name"]
+    actor3_surname = request.form["actor3_surname"]
+    payload = None
+    error = None
+
+    if not title:
+        error = "Title is required."
+    elif not year:
+        error = "Year is required."
+    elif not director_name:
+        error = "Director's name is required."
+    elif not director_surname:
+        error = "Director's surname is required."
+    elif not actor1_name:
+        error = "Actor 1's name is required."
+    elif not actor1_surname:
+        error = "Actor 1's surname is required."
+    elif not actor2_name:
+        error = "Actor 2's name is required."
+    elif not actor2_surname:
+        error = "Actor 2's surname is required."
+    elif not actor3_name:
+        error = "Actor 3's name is required."
+    elif not actor3_surname:
+        error = "Actor 3's surname is required."
+
+    if title.find("/"):
+        error = "the character '/' is not allowed in the title"
+
+    if error is None:
+        payload = {
+            'title': title,
+            'year': year,
+            'director': {'name': director_name, 'surname': director_surname},
+            'actors': [
+                {'name': actor1_name, 'surname': actor1_surname},
+                {'name': actor2_name, 'surname': actor2_surname},
+                {'name': actor3_name, 'surname': actor3_surname}
+            ]}
+
+    return (payload, error)
+
+# Library part
 
 @app.route("/")
 def index():
     """List of available video libraries"""
-    libs = get_libs()
-    return render_template("index.html", libs=libs)
+    return render_template("index.html", libs=libs_list())
 
 @app.route("/new-library", methods=["GET", "POST"])
 def new_library():
@@ -79,42 +160,12 @@ def new_library():
 @app.route("/library/<string:library>")
 def show_library(library):
     """Display list of videos of a video library"""
-    decoded_lib = None
-
-    try:
-        # Retrieve library content
-        r = requests.get(f"{app.config['API_URL']}/library/{library}")
-        r.raise_for_status()
-        decoded_lib = json.loads(r.text)
-    except requests.HTTPError as e:
-        if r.status_code == 404:
-            abort(404, "The video library doesn't exist.")
-        else:
-            abort(500, e)
-    except (requests.RequestException, json.decoder.JSONDecodeError) as e:
-        abort(500, e)
-
-    return render_template("library/show.html", name=library, content=decoded_lib)
+    return render_template("library/show.html", library=library, content=get_lib(library))
 
 @app.route("/library/<string:library>/settings")
 def settings(library):
     """Manage a video library."""
-    decoded_lib = None
-
-    try:
-        # Retrieve library content
-        r = requests.get(f"{app.config['API_URL']}/library/{library}")
-        r.raise_for_status()
-        decoded_lib = json.loads(r.text)
-    except requests.HTTPError as e:
-        if r.status_code == 404:
-            abort(404, "The video library doesn't exist.")
-        else:
-            abort(500, e)
-    except (requests.RequestException, json.decoder.JSONDecodeError) as e:
-        abort(500, e)
-
-    return render_template("library/settings.html", name=library, content=decoded_lib)
+    return render_template("library/settings.html", library=library, content=get_lib(library))
 
 @app.route("/library/<string:library>/settings/delete", methods=["POST"])
 def delete_library(library):
@@ -132,60 +183,22 @@ def delete_library(library):
     except requests.RequestException as e:
         abort(500, e)
 
+# Video part
+
 @app.route("/new-video", methods=["GET", "POST"])
 def new_video():
     """Add a new video in a video library."""
     if request.method == "POST":
-        title = request.form["title"]
-        year = request.form["year"]
-        director_name = request.form["director_name"]
-        director_surname = request.form["director_surname"]
-        actor1_name = request.form["actor1_name"]
-        actor1_surname = request.form["actor1_surname"]
-        actor2_name = request.form["actor2_name"]
-        actor2_surname = request.form["actor2_surname"]
-        actor3_name = request.form["actor3_name"]
-        actor3_surname = request.form["actor3_surname"]
+        payload, error = check_video_format()
         library = request.form["library"]
-        error = None
 
-        if not title:
-            error = "Title is required."
-        elif not year:
-            error = "Year is required."
-        elif not director_name:
-            error = "Director's name is required."
-        elif not director_surname:
-            error = "Director's surname is required."
-        elif not actor1_name:
-            error = "Actor 1's name is required."
-        elif not actor1_surname:
-            error = "Actor 1's surname is required."
-        elif not actor2_name:
-            error = "Actor 2's name is required."
-        elif not actor2_surname:
-            error = "Actor 2's surname is required."
-        elif not actor3_name:
-            error = "Actor 3's name is required."
-        elif not actor3_surname:
-            error = "Actor 3's surname is required."
-        elif not library:
+        if not library:
             error = "Library is required."
 
         if error is None:
-            payload = {
-                'title': title,
-                'year': year,
-                'director': {'name': director_name, 'surname': director_surname},
-                'actors': [
-                    {'name': actor1_name, 'surname': actor1_surname},
-                    {'name': actor2_name, 'surname': actor2_surname},
-                    {'name': actor3_name, 'surname': actor3_surname}
-                ]}
-
             try:
                 # Request the api to add a new video in a video library
-                r = requests.post(f"{app.config['API_URL']}/library/{library}/video/{title}", json=payload)
+                r = requests.post(f"{app.config['API_URL']}/library/{library}/video/{payload['title']}", json=payload)
                 r.raise_for_status()
             except requests.HTTPError as e:
                 if r.status_code == 409:
@@ -200,27 +213,58 @@ def new_video():
         else:
             flash(error)
 
-    return render_template("library/video/new.html", libs=get_libs())
+    return render_template("library/video/new.html", libs=libs_list())
 
-# Edit a video
-@app.route("/library/<string:library>/video/<video_id>/edit", methods=["GET", "POST"])
-def edit_video(library,video_id):
-    return render_template("library/video/edit.html")
+@app.route("/library/<string:library>/video/<video_id>/update", methods=["GET", "POST"])
+def update_video(library,video_id):
+    """Update a video in a video library."""
+    decoded_video = None
+    try:
+        # Retrieve video infos
+        r = requests.get(f"{app.config['API_URL']}/library/{library}/video/{video_id}")
+        r.raise_for_status()
+        decoded_video = json.loads(r.text)
+    except requests.HTTPError as e:
+        if r.status_code == 404:
+            abort(404, "The video doesn't exist.")
+        else:
+            abort(500, e)
+    except (requests.RequestException, json.decoder.JSONDecodeError) as e:
+        abort(500, e)
 
-# Delete a video
+    if request.method == "POST":
+        payload, error = check_video_format()
+
+        if error is None:
+            try:
+                # Request the api to update the video in the video library
+                r = requests.put(f"{app.config['API_URL']}/library/{library}/video/{video_id}", json=payload)
+                r.raise_for_status()
+            except requests.RequestException as e:
+                abort(500, e)
+
+            return redirect(url_for("settings", library=library))
+        else:
+            flash(error)
+
+    return render_template("library/video/update.html", library=library, video=decoded_video)
+
 @app.route("/library/<string:library>/video/<video_id>/delete", methods=["POST"])
 def delete_video(library,video_id):
+    """Delete a video in a video library."""
     try:
-        # Delete library
-        r = requests.post(f"{app.config['API_URL']}/library/")
+        r = requests.delete(f"{app.config['API_URL']}/library/{library}/video/{video_id}")
     except requests.HTTPError as e:
-        print(e, file=sys.stderr)
         if r.status_code == 404:
             abort(404, f"The video library doesn't exist.")
+        else:
+            abort(500, e)
     except requests.RequestException as e:
-        print(e, file=sys.stderr)
+        abort(500, e)
 
-    return redirect(url_for(f"library.{library}.settings"))
+    return redirect(url_for("settings", library=library))
+
+# Search part
 
 @app.route("/search")
 def search_video():
@@ -257,7 +301,7 @@ def search_video():
                 if r.status_code == 404:
                     abort(404, "The video library doesn't exist.")
                 else:
-                    abort(400, e)
+                    abort(500, e)
             except requests.RequestException as e:
                 abort(500, e)
 
@@ -266,4 +310,4 @@ def search_video():
                 return result
                 return render_template("search/result.html", result=result)
 
-    return render_template("search/search.html", libs=get_libs(), error=error)
+    return render_template("search/search.html", libs=libs_list(), error=error)

@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Library {{ name }}{% endblock %}</h1>
-  <a class="action" href="{{ url_for('settings', library=name) }}">Settings</a>
+  <h1>{% block title %}Library {{ library }}{% endblock %}</h1>
+  <a class="action" href="{{ url_for('settings', library=library) }}">Settings</a>
 {% endblock %}
 
 {% block content %}

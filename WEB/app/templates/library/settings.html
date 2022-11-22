@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Library {{ name }}{% endblock %}</h1>
+  <div class="video">
+    <h1>{% block title %}Library {{ library }}{% endblock %}</h1>
+    <div class="about">Owned by {{ content['owner']['surname'] }} {{ content['owner']['name'] }}, last modified on {{ content['last_modify'] }}</div>
+  </div>
 {% endblock %}
 
 {% block content %}
@@ -11,7 +14,7 @@
         <div>
           <h1>{{ video['title'] }}</h1>
         </div>
-        <a class="action" href="{{ url_for('edit_video', library=name, video_id=video['title']) }}">Edit</a>
+        <a class="action" href="{{ url_for('update_video', library=library, video_id=video['title']) }}">Edit</a>
       </header>
     </article>
     {% if not loop.last %}
@@ -19,7 +22,7 @@
     {% endif %}
   {% endfor %}
   <hr>
-  <form action="{{ url_for('delete_library', library=name) }}" method="post">
+  <form action="{{ url_for('delete_library', library=library) }}" method="post">
     <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
   </form>
 {% endblock %}
