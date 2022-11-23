@@ -10,15 +10,15 @@ app = Flask(__name__)
 app.config.from_mapping(
     # a default secret that should be overridden by instance config
     SECRET_KEY = "dev",
-    # define the database folder
+    # path of the database folder
     DATABASE = "app/database"
 )
 
 def check_video_payload(payload):
     """
-    Check payload format of video before processing the request.
+    Check the format of the video payload.
 
-    :return: error
+    :return: the state of the error variable
     """
     error = None
     if not payload['title']:
@@ -39,13 +39,13 @@ def check_video_payload(payload):
 @app.route('/library')
 def library_list():
     """
-    List library files in database folder.
+    List of video library files in the database.
 
-    :return: list of available video libraries
+    :return: the list of available video libraries
     """
     res = []
     for path in os.listdir(path=app.config["DATABASE"]):
-        # Check if the current path exists and if it is a file
+        # check if the current path exists and if it is a file
         if os.path.isfile(os.path.join(app.config["DATABASE"], path)):
             res.append(os.path.splitext(path)[0])
     return(json.dumps(res))
@@ -53,28 +53,32 @@ def library_list():
 @app.route('/library/<string:library>', methods=['GET', 'POST', 'DELETE'])
 def library_management(library):
     """
-    Create/Retrieve/Delete a video library
+    Create/retrieve/delete a video library.
 
     GET >
-    :return 200: the video library requested
+    :return 200: the content of the requested video library
     :raise 404: if the video library was not found
+    :raise 500: if an error occurs while reading the file
 
     POST >
-    :return 201: Success if created new video library
-    :raise 400: if the request is malformated
+    :return 201: Success, if the creation of the new video library is successful
+    :raise 400: if the request is malformed
     :raise 409: if the video library already exists
     :raise 500: if an error occurs when creating the new file
 
     DELETE >
-    :return 204: Success if deleted the video library
-    :raise 503: if an error occurs during the request to the api
+    :return 204: Success, if deletion of the video library is successful
+    :raise 404: if the video library was not found
     """
     if request.method == "GET":
         target_library = os.path.join(app.config["DATABASE"], library)+".json"
-        # Check if the file exists in the database folder and if it is a file
+        # check if the current path exists and if it is a file
         if os.path.isfile(target_library):
-            with open(target_library, "r") as file:
-                return json.dumps(json.load(file))
+            try:
+                with open(target_library, "r") as file:
+                    return json.dumps(json.load(file))
+            except (OSError, json.decoder.JSONDecodeError) as e:
+                abort(500, e)
         else:
             abort(404)
 
@@ -82,12 +86,13 @@ def library_management(library):
         new_library = os.path.join(app.config["DATABASE"], library)+".json"
         error = None
 
-        # Extract payload from POST's data
         try:
+            # extract the payload from the POST data
             payload = request.get_json()
         except json.decoder.JSONDecodeError as e:
             abort(400, e)
 
+        # check the format of the library payload before processing the request
         if not payload["name"]:
             error = "Name is required."
         elif not payload["owner"]["name"]:
@@ -96,7 +101,7 @@ def library_management(library):
             error = "Owner's surname is required."
 
         if error is None:
-            # Prepare content to write in the new file
+            # build the content to be written to the new file
             content = {
                 "owner" : {"name": payload["owner"]["name"], "surname": payload["owner"]["surname"]},
                 "last_modify": date.today().strftime("%d/%m/%Y"),
@@ -124,33 +129,33 @@ def library_management(library):
 @app.route('/library/<string:library>/video/<string:title>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def video_management(library,title):
     """
-    Add/Retrieve/Update/Delete a video in a video library
+    Add/retrieve/update/delete a video from a video library
 
     GET >
-    :return 200: the video library requested
-    :raise 404: if the video library was not found
+    :return 200: the content of the requested video
+    :raise 404: if the video was not found
+    :raise 500: if an error occurs while reading the file
 
     POST >
-    :return 201: Success if correct created
-    :raise 400: if the request is malformated
+    :return 201: Success, if the addition of the new video is successful
+    :raise 400: if the request is malformed
     :raise 409: if the video already exists
-    :raise 500: if an error occurs during the edition of the file
+    :raise 500: if an error occurs when editing the file
 
     PUT >
-    :return 204: Success if correct edited
-    :raise 400: if the request is malformated
-    :raise 400: if the request is malformated
+    :return 204: Success, if the video modification is successful
+    :raise 400: if the request is malformed
     :raise 404: if the video library or the video was not found
-    :raise 500: if an error occurs during the edition of the file
+    :raise 500: if an error occurs when editing the file
 
     DELETE >
-    :return 204: Success if correct deleted
+    :return 204: Success, if the deletion of the video is successful
     :raise 404: if the video library or the video was not found
-    :raise 500: if an error occurs during the edition of the file
+    :raise 500: if an error occurs when editing the file
     """
     if request.method == "GET":
         target_library = os.path.join(app.config["DATABASE"], library)+".json"
-        # Check if the file exists in the database folder and if it is a file
+        # check if the current path exists and if it is a file
         if os.path.isfile(target_library):
             try:
                 with open(target_library, "r") as file:
@@ -165,26 +170,29 @@ def video_management(library,title):
 
     elif request.method == "POST":
         target_library = os.path.join(app.config["DATABASE"], library)+".json"
-        # Extract payload from POST's data
         try:
+            # extract the payload from the POST data and check its contents
             payload = request.get_json()
         except json.decoder.JSONDecodeError as e:
             abort(400, e)
         error = check_video_payload(payload)
 
         if error is None:
+            # check if the current path exists and if it is a file
             if os.path.isfile(target_library):
                 try:
                     with open(target_library, "r") as file:
                         content = json.load(file)
                         for video in content['videos']:
+                            # insert the new video if no other video has the same title
                             if video['title'] == title:
                                 abort(409, "The video already exists.")
                         content['videos'].append(payload)
                     with open(target_library, "w") as file:
+                        # write the new contents of the video library into its file and update the variable last_modify
                         content['last_modify'] = date.today().strftime("%d/%m/%Y")
                         json.dump(content, file)
-                        return "Succes", 201
+                        return "Success", 201
                 except (OSError, json.decoder.JSONDecodeError) as e:
                     abort(500, e)
             else:
@@ -194,7 +202,7 @@ def video_management(library,title):
 
     elif request.method == "PUT":
         target_library = os.path.join(app.config["DATABASE"], library)+".json"
-        # Extract payload from POST's data
+        # extract the payload from the POST data and check its contents
         try:
             payload = request.get_json()
         except json.decoder.JSONDecodeError as e:
@@ -202,20 +210,23 @@ def video_management(library,title):
         error = check_video_payload(payload)
 
         if error is None:
+            # check if the current path exists and if it is a file
             if os.path.isfile(target_library):
                 try:
                     with open(target_library, "r") as file:
                         content = json.load(file)
                         find = False
                         for video in content['videos']:
+                            # replace the content of the video if its title matches
                             if video['title'] == title:
                                 find = True
                                 content['videos'] = [payload if video['title'] == title else video for video in content['videos']]
-                        if not find: abort(404, "The video does not exists.")
+                        if not find: abort(404, "The video does not exist.")
                     with open(target_library, "w") as file:
+                        # write the new contents of the video library into its file and update the variable last_modify
                         content['last_modify'] = date.today().strftime("%d/%m/%Y")
                         json.dump(content, file)
-                        return "Succes", 204
+                        return "Success", 204
                 except (OSError, json.decoder.JSONDecodeError) as e:
                     abort(500, e)
             else:
@@ -234,11 +245,11 @@ def video_management(library,title):
                         if video['title'] == title:
                             find = True
                             content['videos'].pop(content['videos'].index(video))
-                if not find: abort(404, "The video does not exists.")
+                if not find: abort(404, "The video does not exist.")
                 with open(target_library, "w") as file:
                     content['last_modify'] = date.today().strftime("%d/%m/%Y")
                     json.dump(content, file)
-                    return "Succes", 204
+                    return "Success", 204
             except (OSError, json.decoder.JSONDecodeError) as e:
                 abort(500, e)
         else:
@@ -247,21 +258,21 @@ def video_management(library,title):
 @app.route('/library/<string:library>/by-name/<string:name>')
 def search_by_name(library,name):
     """
-    Search videos in a video library filter by name.
+    Search for videos in a video library by filtering them by name.
 
-    :return: list of videos matching the search
+    :return: the list of videos matching the search
     """
     target_library = os.path.join(app.config["DATABASE"], library)+".json"
-    # Check if the file exists in the database folder and if it is a file
+    # check if the current path exists and if it is a file
     if os.path.isfile(target_library):
         try:
             with open(target_library, "r") as file:
                 content = json.load(file)
                 match = []
                 for video in content['videos']:
-                    # Match without case sensitivity
+                    # match without case sensitivity
                     if name.lower() in video['title'].lower(): match.append(video)
-            # Return list of matches
+            # return the list of matches
             return json.dumps(match)
         except (OSError, json.decoder.JSONDecodeError) as e:
             abort(500, e)
@@ -271,12 +282,12 @@ def search_by_name(library,name):
 @app.route('/library/<string:library>/by-actor/<string:name>')
 def search_by_actor(library,name):
     """
-    Search videos in a video library filter by actor.
+    Search for videos in a video library by filtering them by actor.
 
-    :return: list of videos matching the search
+    :return: the list of videos matching the search
     """
     target_library = os.path.join(app.config["DATABASE"], library)+".json"
-    # Check if the file exists in the database folder and if it is a file
+    # check if the current path exists and if it is a file
     if os.path.isfile(target_library):
         try:
             with open(target_library, "r") as file:
@@ -284,10 +295,10 @@ def search_by_actor(library,name):
                 match = []
                 for video in content['videos']:
                     for actor in video['actors']:
-                        # Match without case sensitivity
+                        # match without case sensitivity
                         if any(name.lower() in info.lower() for info in [actor["name"], actor["surname"]]):
                             match.append(video)
-            # Return list of matches
+            # return the list of matches
             return json.dumps(match)
         except (OSError, json.decoder.JSONDecodeError) as e:
             abort(500, e)

@@ -2,31 +2,31 @@
 
 ## Considerations
 
-### Fonctions
+### Features
 
-- Creation d'une videotheque
-  - Parametres
-    - Nom du fichier
-    - Proprietaire
-  - Creation de la liste des films vide
-- Suppression d'une videotheque
-  - Parametres
-    - Nom du fichier
-  - Destruction du fichier
-- Affichage de l'ensemble des films
-- Recherche d'un film
-- Ajout d'un film
-- Suppression d'un film
-- Recherche des films d'un acteur
-- Modification d'un film
+- Creating a video library
+  - Parameters
+    - Name of the file
+    - Owner
+  - Creation of the empty film list
+- Deleting a library
+  - Parameters
+    - Name of the file
+  - Delete file
+- Display of all the films
+- Search for a movie
+- Add a movie
+- Deleting a movie
+- Search for films of an actor
+- Edit a movie
 
 ## Development
 
 ```bash
-# Build de l'image docker
+# Build the docker image
 docker build -t app .
 
-# Start docker compose
+# Launch docker compose
 docker compose up
 ```
 
@@ -42,7 +42,7 @@ docker compose up
 - [x] développez les pages associés aux services, comme indiqué dans les transparents du cours 7
 - [ ] proposez une batterie de test pour présenter votre application
 
-## Sources
+## References
 
 - [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 - [Docker - Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
