@@ -23,8 +23,11 @@
 ## Development
 
 ```bash
-# Build de l'image docker pour le conteneur web
-docker build -t web .
+# Build de l'image docker
+docker build -t app .
+
+# Start docker compose
+docker compose up
 ```
 
 ## To do
@@ -35,8 +38,8 @@ docker build -t web .
 - [x] créez l'image pour le gestionnaire de services REST
   - [x] décrivez l'architecture de l'API REST, ainsi que l'ensemble des endpoints et des signatures des services
   - [x] décrivez la configuration système de votre conteneur
-- [ ] développez l'ensemble des services REST. Vous testerez ces services à l'aide de la commande curl
-- [ ] développez les pages associés aux services, comme indiqué dans les transparents du cours 7
+- [x] développez l'ensemble des services REST. Vous testerez ces services à l'aide de la commande curl
+- [x] développez les pages associés aux services, comme indiqué dans les transparents du cours 7
 - [ ] proposez une batterie de test pour présenter votre application
 
 ## Sources
@@ -46,4 +49,4 @@ docker build -t web .
 - [Docker - Compose specification](https://docs.docker.com/compose/compose-file/)
 - [Flask's documentation](https://flask.palletsprojects.com/en/2.2.x/)
 - [Requests's documentation](https://requests.readthedocs.io/en/latest/api/)
-- [HTTP Status Codes](https://restfulapi.net/http-status-codes/)
+- [HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)

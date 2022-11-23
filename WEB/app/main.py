@@ -97,7 +97,7 @@ def check_video_format():
     elif not actor3_surname:
         error = "Actor 3's surname is required."
 
-    if title.find("/"):
+    if "/" in title:
         error = "the character '/' is not allowed in the title"
 
     if error is None:
@@ -290,11 +290,9 @@ def search_video():
                     case "title":
                         r = requests.get(f"{app.config['API_URL']}/library/{lib}/by-name/{name}")
                         r.raise_for_status()
-                        return "Succes"
                     case "actor":
                         r = requests.get(f"{app.config['API_URL']}/library/{lib}/by-actor/{name}")
                         r.raise_for_status()
-                        return "Succes"
                     case _:
                         error = "Unknown search type."
             except requests.HTTPError as e:
@@ -306,8 +304,10 @@ def search_video():
                 abort(500, e)
 
             if error is None:
-                result = json.loads(r.text)
-                return result
+                try:
+                    result = json.loads(r.text)
+                except json.decoder.JSONDecodeError as e:
+                    abort(500, e)
                 return render_template("search/result.html", result=result)
 
     return render_template("search/search.html", libs=libs_list(), error=error)

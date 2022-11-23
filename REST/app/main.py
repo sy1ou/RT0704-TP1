@@ -121,7 +121,6 @@ def library_management(library):
         except FileNotFoundError as e:
             abort(404, e)
 
-# Add/Edit/Delete a video
 @app.route('/library/<string:library>/video/<string:title>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def video_management(library,title):
     """
@@ -245,12 +244,52 @@ def video_management(library,title):
         else:
             abort(404, "The library does not exist.")
 
-# Search film in video library
 @app.route('/library/<string:library>/by-name/<string:name>')
 def search_by_name(library,name):
-    return "soon", 501
+    """
+    Search videos in a video library filter by name.
 
-# Search for films by an actor in video library
+    :return: list of videos matching the search
+    """
+    target_library = os.path.join(app.config["DATABASE"], library)+".json"
+    # Check if the file exists in the database folder and if it is a file
+    if os.path.isfile(target_library):
+        try:
+            with open(target_library, "r") as file:
+                content = json.load(file)
+                match = []
+                for video in content['videos']:
+                    # Match without case sensitivity
+                    if name.lower() in video['title'].lower(): match.append(video)
+            # Return list of matches
+            return json.dumps(match)
+        except (OSError, json.decoder.JSONDecodeError) as e:
+            abort(500, e)
+    else:
+        abort(404)
+
 @app.route('/library/<string:library>/by-actor/<string:name>')
 def search_by_actor(library,name):
-    return "soon", 501
+    """
+    Search videos in a video library filter by actor.
+
+    :return: list of videos matching the search
+    """
+    target_library = os.path.join(app.config["DATABASE"], library)+".json"
+    # Check if the file exists in the database folder and if it is a file
+    if os.path.isfile(target_library):
+        try:
+            with open(target_library, "r") as file:
+                content = json.load(file)
+                match = []
+                for video in content['videos']:
+                    for actor in video['actors']:
+                        # Match without case sensitivity
+                        if any(name.lower() in info.lower() for info in [actor["name"], actor["surname"]]):
+                            match.append(video)
+            # Return list of matches
+            return json.dumps(match)
+        except (OSError, json.decoder.JSONDecodeError) as e:
+            abort(500, e)
+    else:
+        abort(404)
