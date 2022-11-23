@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New library{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="name">File name</label>
+    <input type=text name="name" id="name" maxlength="12" required>
+    <label for="owner_name">Owner's name</label>
+    <input type=text name="owner_name" id="owner_name" maxlength="12" required>
+    <label for="owner_surname">Owner's surname</label>
+    <input type=text name="owner_surname" id="owner_surname" maxlength="12" required>
+    <input type="submit" value="Create">
+  </form>
+{% endblock %}

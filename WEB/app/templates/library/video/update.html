@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Edit video{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="title">Title</label>
+    <input type=text name="title" id="title" value="{{ video['title'] }}" maxlength="32" required>
+
+    <label for="year">Year</label>
+    <input type="number" name="year" id="year" value="{{ video['year'] }}" placeholder="YYYY" min="1800" max="2100" required>
+
+    <label for="director_name">Director's name</label>
+    <input type=text name="director_name" id="director_name" value="{{ video['director']['name'] }}" maxlength="24" required>
+    <label for="director_surname">Director's surname</label>
+    <input type=text name="director_surname" id="director_surname" value="{{ video['director']['surname'] }}" maxlength="24" required>
+
+    {% for actor in video['actors'] %}
+    <label for="actor{{ loop.index }}_name">Actor {{ loop.index }}'s name</label>
+    <input type=text name="actor{{ loop.index }}_name" id="actor{{ loop.index }}_name" value="{{ actor['name'] }}" maxlength="24" required>
+    <label for="actor{{ loop.index }}_surname">Actor {{ loop.index }}'s surname</label>
+    <input type=text name="actor{{ loop.index }}_surname" id="actor{{ loop.index }}_surname" value="{{ actor['surname'] }}" maxlength="24" required>
+    {% endfor %}
+
+    <input type="submit" value="Save">
+  </form>
+  <hr>
+  <form action="{{ url_for('delete_video', library=library, video_id=video['title']) }}" method="post">
+    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+  </form>
+{% endblock %}
